@@ -1,7 +1,7 @@
 provider "aws" {
 # access_key = "xxxxxxxxxxxxxxxxxxx"
 # secret_key = "xxxxxxxxxxxxxxxxxxxxxxxx"
-  region     = "eu-central-1"
+# region     = "eu-central-1"
 }
 
 resource "aws_instance" "amazon_linux_server" {                                 # создание нового ресурса "aws_instance" с названием "amazon_linux_server"
