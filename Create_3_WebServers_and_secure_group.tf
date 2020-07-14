@@ -17,9 +17,9 @@ resource "aws_instance" "WebServer-1" {
         delete_on_termination = true
     }
 
-    tags {
-        "Name" = "WebServer-1"
-        "Owner" = "Ivan Dziarzhynski"
+    tags = {
+        Name = "WebServer-1"
+        Owner = "Ivan Dziarzhynski"
     }
     user_data = file("e:/Git/Linux-UNIX/Bash_Scripts/Install_simple_web_server1.sh")
 }
@@ -36,9 +36,9 @@ resource "aws_instance" "WebServer-2" {
         delete_on_termination = true
     }
 
-    tags {
-        "Name" = "WebServer-2"
-        "Owner" = "Ivan Dziarzhynski"
+    tags = {
+        Name = "WebServer-2"
+        Owner = "Ivan Dziarzhynski"
     }
     user_data = file("e:/Git/Linux-UNIX/Bash_Scripts/Install_simple_web_server2.sh")
 }
@@ -55,9 +55,9 @@ resource "aws_instance" "WebServer-3" {
         delete_on_termination = true
     }
 
-    tags {
-        "Name" = "WebServer-3"
-        "Owner" = "Ivan Dziarzhynski"
+    tags = {
+        Name = "WebServer-3"
+        Owner = "Ivan Dziarzhynski"
     }
     user_data = file("e:/Git/Linux-UNIX/Bash_Scripts/Install_simple_web_server3.sh")
 }
@@ -121,7 +121,7 @@ resource "aws_security_group" "webservers_security_group" {
         cidr_blocks     = ["0.0.0.0/0"]
     }
 
-    tags {
-        "Name" = "WebServers"
+    tags = {
+        Name = "WebServers"
     }
 }
