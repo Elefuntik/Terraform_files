@@ -151,32 +151,32 @@ resource "aws_elb" "WebServers-LoadBalancer" {
     connection_draining_timeout = 300                                                                                                            #
     internal                    = false                                                                                                          #
 
-    listener {                                                                                                  # 
-        instance_port      = 80                                                                                 #
-        instance_protocol  = "http"                                                                             #
-        lb_port            = 80                                                                                 #
-        lb_protocol        = "http"                                                                             #
-        ssl_certificate_id = ""                                                                                 #
+    listener {                                                                                                  # слушатель (listener) портов и портоколов на балансирощике
+        instance_port      = 80                                                                                 # порт инстанса (веб-сервера) на который перенаправляется траффик с балансировщика
+        instance_protocol  = "http"                                                                             # протокол по которому перенаправляется траффик с балансировщика на инстанс (веб-сервер)
+        lb_port            = 80                                                                                 # порт который слушает listener балансировщика и по которму приходит входящий траффик на него (балансировщик)
+        lb_protocol        = "http"                                                                             # протокол на котором слушает listener балансировщика и по которму приходит входящий траффик на него (балансировщик)
+        ssl_certificate_id = ""                                                                                 # id ssl-сертификата (если используется)
     }
 
-    health_check {                                                                                              #
-        healthy_threshold   = 10                                                                                #
-        unhealthy_threshold = 2                                                                                 #
-        interval            = 30                                                                                #
-        target              = "HTTP:80/index.html"                                                              #
-        timeout             = 5                                                                                 #
+    health_check {                                                                                              # проверка состояния инстансов
+        healthy_threshold   = 10                                                                                # количество пройденных подряд проверок (health check) для того чтобы считать что инстанс работает
+        unhealthy_threshold = 2                                                                                 # количество непройденных подряд проверок (health check) для того чтобы считать что инстанс не работает 
+        interval            = 30                                                                                # время (интервал) для проверки (health check) (каждые 30 сек. будет выполняться health check)
+        target              = "HTTP:80/index.html"                                                              # проверка состояния по протоколу http:80 путем открытия index.html
+        timeout             = 5                                                                                 # время ожидания ответа при проверке (елси больше 5 сек. то проверка (health check) не проходит)
     }
 
-    tags = {                                                                                                    #
-        Project = "WebApp"                                                                                      #
+    tags = {                                                                                                    # тег
+        Project = "WebApp"                                                                                      
     }
 } 
 /* 
-output "elb_instances" {                                                                                        #
-  value = ["${aws_elb.elb.instances}"]                                                                          #
+output "elb_instances" {                                                                                        
+  value = ["${aws_elb.elb.instances}"]                                                                          
 }
 
-output "elb_public_dns_name" {                                                                                  # 
-  value = ["${aws_elb.elb.dns_name}"]                                                                           # 
+output "elb_public_dns_name" {                                                                                  
+  value = ["${aws_elb.elb.dns_name}"]                                                                           
 }
 */
