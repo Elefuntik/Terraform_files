@@ -171,12 +171,11 @@ resource "aws_elb" "WebServers-LoadBalancer" {
         Project = "WebApp"                                                                                      
     }
 } 
-/* 
-output "elb_instances" {                                                                                        
-  value = ["${aws_elb.elb.instances}"]                                                                          
+
+output "elb_instances" {                                                                                        # Вывод данных в консоль:                                
+  value = ["${aws_elb.WebServers-LoadBalancer.instances}"]                                                      # ID инстансов балансировщика                       
 }
 
-output "elb_public_dns_name" {                                                                                  
-  value = ["${aws_elb.elb.dns_name}"]                                                                           
+output "elb_public_dns_name" {                                                                                  # Вывод данных в консоль:                                                                 
+  value = ["${aws_elb.WebServers-LoadBalancer.dns_name}"]                                                       # DNS-имя балансировщика (А-запись)                      
 }
-*/
