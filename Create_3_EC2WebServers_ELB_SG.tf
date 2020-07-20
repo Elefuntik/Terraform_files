@@ -48,7 +48,7 @@ resource "aws_instance" "WebServer-3" {
     availability_zone           = "eu-central-1c"    
     instance_type               = "t2.micro"    
     key_name                    = "Frankfurt-key"    
-    vpc_security_group_ids      = [aws_security_group.webservers_security_group.id] 
+    vpc_security_group_ids      = [aws_security_group.webservers_security_group.id, aws_security_group.allow_ssh_rdp_icmpv4.id] 
     root_block_device {
         volume_type           = "gp2"
         volume_size           = 8
@@ -66,30 +66,12 @@ resource "aws_instance" "WebServer-3" {
 
 resource "aws_security_group" "webservers_security_group" {
     name        = "WebServers Security Group"
-    description = "Allow HTTP. HTTPS for web and SSH, RDP, ICMPv4 for remote access"
+    description = "Allow HTTP, HTTPS protocols"
     
     ingress {
         description     = "Allow HTTP"
         from_port       = 80
         to_port         = 80
-        protocol        = "tcp"
-        cidr_blocks     = ["0.0.0.0/0"]
-        ipv6_cidr_blocks     = ["::/0"]
-    }
-
-    ingress {
-        description     = "Allow SSH Connection" 
-        from_port       = 22
-        to_port         = 22
-        protocol        = "tcp"
-        cidr_blocks     = ["0.0.0.0/0"]
-        ipv6_cidr_blocks     = ["::/0"]
-    }
-
-    ingress {
-        description     = "Allow RDP Connection"
-        from_port       = 3389
-        to_port         = 3389
         protocol        = "tcp"
         cidr_blocks     = ["0.0.0.0/0"]
         ipv6_cidr_blocks     = ["::/0"]
@@ -104,16 +86,6 @@ resource "aws_security_group" "webservers_security_group" {
         ipv6_cidr_blocks     = ["::/0"]
     }
 
-    ingress {
-        description     = "Allow ICMPv4 (ping)"
-        from_port       = -1
-        to_port         = -1
-        protocol        = "icmp"
-        cidr_blocks     = ["0.0.0.0/0"]
-        ipv6_cidr_blocks     = ["::/0"]
-    }
-
-
     egress {
         from_port       = 0
         to_port         = 0
@@ -126,13 +98,54 @@ resource "aws_security_group" "webservers_security_group" {
     }
 }
 
+resource "aws_security_group" "allow_ssh_rdp_icmpv4" {
+  name        = "Remote connection Security Group (SSH, RDP, ICMPv4)"
+  description = "Allow SSH, RDP, ICMPv4 inbound traffic"
+  
+
+  ingress {
+    description = "Allow SSH Connection"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "Allow RDP Connection"
+    from_port   = 3389
+    to_port     = 3389
+    protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+    ingress {
+    description = "Allow ICMPv4 (ping)"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "ICMP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "allow_ssh_rdp_icmpv4"
+  }
+}
+
 
 resource "aws_elb" "WebServers-LoadBalancer" {
     name                        = "WebServers-LoadBalancer"                                                                                      # Название балансировщика
-    availability_zones          = ["eu-central-1a", "eu-central-1b", "eu-central-1c"]                                                            # 
-    security_groups             = [aws_security_group.webservers_security_group.id]                                                              #
-    instances                   = ["${aws_instance.WebServer-1.id}", "${aws_instance.WebServer-2.id}", "${aws_instance.WebServer-3.id}"]         # 
-    cross_zone_load_balancing   = true                                                                                                           #
+    availability_zones          = ["eu-central-1a", "eu-central-1b", "eu-central-1c"]                                                            # Зоны доступности
+    security_groups             = [aws_security_group.webservers_security_group.id, aws_security_group.allow_ssh_rdp_icmpv4.id]                  # Группы безопасности (Firewall)
+    instances                   = ["${aws_instance.WebServer-1.id}", "${aws_instance.WebServer-2.id}", "${aws_instance.WebServer-3.id}"]         # Инстансы EC2, которыми будет управлять load balancer
+    cross_zone_load_balancing   = true                                                                                                           # Включение балансировки между инстансами в разных зонах
     idle_timeout                = 60                                                                                                             # 
     connection_draining         = true                                                                                                           #
     connection_draining_timeout = 300                                                                                                            #
